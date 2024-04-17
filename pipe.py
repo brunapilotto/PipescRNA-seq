@@ -4,6 +4,11 @@ import shutil
 import subprocess
 import time
 
+from termcolor import colored
+from rich.console import Console
+
+from utils.check_input import CheckInput
+
 
 def menu():
     parser = argparse.ArgumentParser(
@@ -31,8 +36,17 @@ def set_work_env(output_folder):
     os.chdir(exec_path)
 
 
-if __name__ == "__main__":
+def main():
     start = time.time()
     options = menu()
+    console = Console()
+    with console.status("[bold green]Searching fastqs..."):
+        check_input = CheckInput(options.fastq)
+        fastqs = check_input.check_fastq()
+
     # Set work environment directory
     set_work_env(options.output)
+
+
+if __name__ == "__main__":
+    main()
