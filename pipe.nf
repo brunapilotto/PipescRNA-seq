@@ -1,23 +1,20 @@
-// params.fastq_1 = null
-// params.fastq_2 = null
+params.outdir = null
+params.fastq_path = null
 
-process fastp {
-    conda 'bioconda::fastp=0.23.2'
-    
-    // input:
-    // path fastq_1
-    // path fastq_2
+include { FASTP } from './tools/fastp/fastp'
 
-    // output:
-    // path 'out.R1.fq.gz' into clean1
-    // path 'out.R2.fq.gz' into clean2
-    
-    shell:
-    '''
-    fastp -?
-    '''
-}
+log.info """\
+    Pipeline lncsc-RNAseq
+    ========================
+    fastq_path: ${params.fastq_path}
+    output: ${params.outdir}
+""".stripIndent()
 
 workflow {
-    fastp()
+    def lastFolderName = file(params.fastq_path).getName()
+    fastq_files = channel.fromPath( "${params.fastq_path}/${lastFolderName}_{1,2}.fastq", checkIfExists: true )
+
+    // Run Fastp
+    FASTP()
+
 }
