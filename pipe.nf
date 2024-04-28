@@ -10,10 +10,18 @@ log.info """\
     output: ${params.outdir}
 """.stripIndent()
 
+def getFastqFiles(directory) {
+    def dir = file(directory)
+    def files = dir.listFiles().findAll { element -> element.getName().endsWith(".fastq") }.sort()
+    return files
+}
+
 workflow {
-    def lastFolderName = file(params.fastq_path).getName()
-    fastq_files = channel.fromPath( "${params.fastq_path}/${lastFolderName}_{1,2}.fastq", checkIfExists: true )
-    .toSortedList()
+    def fastq_files = getFastqFiles(params.fastq_path)
+
+    // Criação dos canais
+    fastq1 = Channel.fromPath(fastq_files[0])
+    fastq2 = Channel.fromPath(fastq_files[1])
     
     // Run Fastp
     FASTP()
