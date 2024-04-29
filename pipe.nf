@@ -17,6 +17,7 @@ def getFastqFiles(directory) {
 }
 
 workflow {
+    def lastFolderName = file(params.fastq_path).getName()
     def fastq_files = getFastqFiles(params.fastq_path)
 
     // Criação dos canais
@@ -24,6 +25,6 @@ workflow {
     fastq2 = Channel.fromPath(fastq_files[1])
     
     // Run Fastp
-    FASTP()
+    clean_files = FASTP(fastq1, fastq2, lastFolderName, params.outdir)
 
 }
