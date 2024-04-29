@@ -1,16 +1,20 @@
 process FASTP {
     conda 'bioconda::fastp=0.23.2'
+    cpus 16
     
-    // input:
-    // path fastq_1
-    // path fastq_2
+    input:
+    path fastq_1
+    path fastq_2
+    val sample_name 
+    path outdir
 
-    // output:
-    // path "${lastFolderName}_1.fq.gz" into clean1
-    // path "${lastFolderName}_2.fq.gz" into clean2
+    output:
+    path "${outdir}/fastp/${sample_name}_1_clean.fastq" 
+    path "${outdir}/fastp/${sample_name}_2_clean.fastq"
     
     shell:
-    '''
-    fastp -?
-    '''
+    """
+    mkdir -p ${outdir}/fastp
+    fastp fastp -i ${fastq_1} -I ${fastq_2} -o ${outdir}/fastp/${sample_name}_1_clean.fastq -O ${outdir}/fastp/${sample_name}_2_clean.fastq
+    """
 }
