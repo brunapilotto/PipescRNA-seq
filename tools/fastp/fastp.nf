@@ -16,5 +16,7 @@ process FASTP {
     """
     mkdir -p ${outdir}/fastp
     fastp fastp -i ${fastq_1} -I ${fastq_2} -o ${outdir}/fastp/${sample_name}_1_clean.fastq -O ${outdir}/fastp/${sample_name}_2_clean.fastq
+    mv fastp.html ${outdir}/fastp/${sample_name}.html
+    mv fastp.json ${outdir}/fastp/${sample_name}.json
     """
 }
