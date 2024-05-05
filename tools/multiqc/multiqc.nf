@@ -2,6 +2,8 @@ process MULTIQC {
     conda "/home/mbruna/PipescRNA-seq/envs/multiqc.yml"
     
     input:
+    path fastqc_zip
+    path star_log
     path outdir
 
     output:
