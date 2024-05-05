@@ -3,6 +3,7 @@ params.fastq_path = null
 
 include { FASTQC } from './tools/fastqc/fastqc'
 include { MULTIQC } from './tools/multiqc/multiqc'
+include { STAR } from './tools/star/star'
 
 log.info """\
     Pipeline lncsc-RNAseq
@@ -26,8 +27,11 @@ workflow {
     fastq2 = Channel.fromPath(fastq_files[1])
 
     // Run FastQC
-    FASTQC(fastq1, fastq2, params.outdir)
+    fastqc_zip = FASTQC(fastq1, fastq2, params.outdir)
+
+    // Run STAR
+    star_log = STAR(fastq1, fastq2, lastFolderName, params.outdir)
 
     // Run MultiQC
-    // MULTIQC(params.outdir)
+    MULTIQC(fastqc_zip, star_log, params.outdir)
 }
