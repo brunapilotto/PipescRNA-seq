@@ -27,11 +27,11 @@ workflow {
     fastq2 = Channel.fromPath(fastq_files[1])
 
     // Run FastQC
-    fastqc_zip = FASTQC(fastq1, fastq2, params.outdir)
+    FASTQC(fastq1, fastq2, params.outdir)
 
     // Run STAR
-    star_log = STAR(fastq1, fastq2, lastFolderName, params.outdir)
+    STAR(fastq1, fastq2, lastFolderName, params.outdir)
 
     // Run MultiQC
-    MULTIQC(fastqc_zip, star_log, params.outdir)
+    MULTIQC(FASTQC.out.fastqc_zip, STAR.out.log_final, params.outdir)
 }
