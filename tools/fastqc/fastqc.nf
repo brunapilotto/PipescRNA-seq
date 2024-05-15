@@ -8,13 +8,13 @@ process FASTQC {
     path outdir
 
     output:
-    path "${outdir}/fastqc/*.zip"
+    path "${outdir}/fastqc/*.zip", emit: fastqc_zip
     
     shell:
     """
     if [ -z "\$(find "${outdir}/fastqc" -mindepth 1 -print -quit)" ]; then
         mkdir -p ${outdir}/fastqc
-        ${FASTQC_PATH} -o ${outdir}/fastqc -f fastq ${read_1} ${read_2} -t 20
+        ${FASTQC_PATH} -o ${outdir}/fastqc -f fastq ${read_1} ${read_2} -t 6
     fi
     """
 }
