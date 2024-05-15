@@ -46,7 +46,7 @@ dependencies:
       - markupsafe==2.1.5
       - matplotlib==3.8.4
       - mdurl==0.1.2
-      - multiqc==1.21
+      - multiqc==1.22
       - networkx==3.3
       - numpy==1.26.4
       - packaging==24.0
