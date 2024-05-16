@@ -4,6 +4,8 @@ fastqs_path = params.fastq_path ? file( params.fastq_path, checkIfExists: true )
 include { FASTQC } from './modules/fastqc/fastqc'
 include { MULTIQC } from './modules/multiqc/multiqc'
 include { STAR } from './modules/star/star'
+include { PIGZ } from './utils/pigz'
+include { EMPTYDROPS_CELL_CALLING } from './modules/bioconductor/emptydrops'
 
 log.info """\
     Pipeline lncsc-RNAseq
@@ -14,7 +16,7 @@ log.info """\
 
 def getFastqFiles(directory) {
     def dir = file(directory)
-    def files = dir.listFiles().findAll { element -> element.getName().endsWith(".fastq") }.sort()
+    def files = dir.listFiles().findAll { element -> element.getName().endsWith(".fastq.gz") }.sort()
     return files
 }
 
@@ -31,6 +33,12 @@ workflow {
 
     // Run STAR
     STAR(fastq1, fastq2, lastFolderName, params.outdir)
+
+    // Run PIGZ
+    PIGZ(STAR.out.raw_counts)
+
+    // Run EmptyDrops
+    EMPTYDROPS_CELL_CALLING(PIGZ.out.matrix_zip, PIGZ.out.barcodes_zip, PIGZ.out.features_zip, params.outdir)
 
     // Run MultiQC
     // MULTIQC(FASTQC.out.fastqc_zip, STAR.out.log_final, params.outdir)
