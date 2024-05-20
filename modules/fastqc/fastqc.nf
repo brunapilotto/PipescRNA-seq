@@ -1,7 +1,7 @@
 FASTQC_PATH = "/data1/biotools/FastQC/fastqc"
 
 process FASTQC {
-    label 'process_low'
+    label 'process_single'
     
     input:
     path read_1
@@ -10,12 +10,11 @@ process FASTQC {
 
     output:
     path "${outdir}/fastqc/*.zip", emit: fastqc_zip
+    path "${outdir}/fastqc/*.html", emit: fastqc_html
     
     script:
     """
-    if [ -z "\$(find "${outdir}/fastqc" -mindepth 1 -print -quit)" ]; then
-        mkdir -p ${outdir}/fastqc
-        ${FASTQC_PATH} -o ${outdir}/fastqc -f fastq ${read_1} ${read_2} -t $task.cpus
-    fi
+    mkdir -p ${outdir}/fastqc
+    ${FASTQC_PATH} -o ${outdir}/fastqc -f fastq ${read_1} ${read_2} -t $task.cpus
     """
 }
