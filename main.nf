@@ -2,11 +2,9 @@ output_dir = params.outdir ? file( params.outdir, checkIfExists: true ) : null
 fastqs_path = params.fastq_path ? file( params.fastq_path, checkIfExists: true ) : null
 
 include { FASTQC } from './modules/fastqc/fastqc'
-include { MULTIQC } from './modules/multiqc/multiqc'
 include { STAR } from './modules/star/star'
-include { PIGZ } from './utils/pigz'
-include { EMPTYDROPS_CELL_CALLING } from './modules/bioconductor/emptydrops'
-include { MTX_TO_H5AD } from './modules/mtx_conversion/mtx_to_h5ad'
+include { MTX_TO_SEURAT } from './modules/mtx_conversion/mtx_to_seurat'
+include { SEURAT } from './modules/seurat_analysis/seurat'
 
 log.info """\
     Pipeline lncsc-RNAseq
@@ -24,8 +22,6 @@ def getFastqFiles(directory) {
 workflow {
     def lastFolderName = file(params.fastq_path).getName()
     def fastq_files = getFastqFiles(params.fastq_path)
-    ch_mtx_matrices = Channel.empty()
-    ch_txp2gene = []
 
     // Criação dos canais
     fastq1 = Channel.fromPath(fastq_files[0])
@@ -36,18 +32,10 @@ workflow {
 
     // Run STAR
     STAR(fastq1, fastq2, lastFolderName, params.outdir)
-    ch_mtx_matrices = ch_mtx_matrices.mix(STAR.out.raw_counts, STAR.out.filtered_counts)
 
-    // Run PIGZ
-    PIGZ(STAR.out.raw_counts)
+    // Convert matrix to seurat obj
+    MTX_TO_SEURAT(STAR.out.filtered_counts, params.outdir, lastFolderName)
 
-    // Run EmptyDrops
-    EMPTYDROPS_CELL_CALLING(PIGZ.out.matrix_zip, PIGZ.out.barcodes_zip, PIGZ.out.features_zip, params.outdir)
-    ch_mtx_matrices = ch_mtx_matrices.mix( EMPTYDROPS_CELL_CALLING.out.filtered_matrices )
-
-    // Convert matrix to h5ad
-    MTX_TO_H5AD(ch_mtx_matrices, ch_txp2gene, lastFolderName, params.outdir)
-
-    // Run MultiQC
-    // MULTIQC(FASTQC.out.fastqc_zip, STAR.out.log_final, params.outdir)
+    // Make clusters
+    SEURAT(MTX_TO_SEURAT.out.seuratObject, params.outdir)
 }
