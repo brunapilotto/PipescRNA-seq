@@ -1,5 +1,5 @@
 STAR_PATH = "/home/mbruna/STAR-2.7.11b/bin/Linux_x86_64_static/STAR"
-INDEX_PATH = "/data1/projects/LGMB-018/reference_cell_ranger/refdata-gex-GRCh38-2024-A/star/"
+INDEX_PATH = "/data1/projects/LGMB-018/reference_cell_ranger/star_index"
 GTF_PATH = "/data1/projects/LGMB-018/reference_cell_ranger/refdata-gex-GRCh38-2024-A/genes/genes.gtf"
 WHITE_LIST_PATH = "/home/mbruna/PipescRNA-seq/assets/10x_V2_barcode_whitelist.txt"
 
