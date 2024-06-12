@@ -1,41 +1,20 @@
-output_dir = params.outdir ? file( params.outdir, checkIfExists: true ) : null
-fastqs_path = params.fastq_path ? file( params.fastq_path, checkIfExists: true ) : null
-
-include { FASTQC } from './modules/fastqc/fastqc'
-include { STAR } from './modules/star/star'
-include { MTX_TO_SEURAT } from './modules/mtx_conversion/mtx_to_seurat'
-include { SEURAT } from './modules/seurat_analysis/seurat'
+include { FASTQC        } from './modules/fastqc'
+include { STAR          } from './modules/star'
+include { MTX_TO_SEURAT } from './modules/mtx_conversion'
+include { SEURAT        } from './modules/seurat_analysis'
 
 log.info """\
     Pipeline lncsc-RNAseq
     ======================
-    fastq_path: ${params.fastq_path}
     output: ${params.outdir}
 """.stripIndent()
 
-def getFastqFiles(directory) {
-    def dir = file(directory)
-    def files = dir.listFiles().findAll { element -> element.getName().endsWith(".fastq.gz") }.sort()
-    return files
-}
-
 workflow {
-    def lastFolderName = file(params.fastq_path).getName()
-    def fastq_files = getFastqFiles(params.fastq_path)
+    ch_metadado = Channel.fromPath(params.metadado).splitCsv(sep: ',', header: true)
+                    .map { row -> tuple([id:row['ID']], [fastq1:row['fastq1']], [fastq2:row['fastq2']])}
 
-    // Criação dos canais
-    fastq1 = Channel.fromPath(fastq_files[0])
-    fastq2 = Channel.fromPath(fastq_files[1])
-
-    // Run FastQC
-    FASTQC(fastq1, fastq2, params.outdir)
-
-    // Run STAR
-    STAR(fastq1, fastq2, lastFolderName, params.outdir)
-
-    // Convert matrix to seurat obj
-    MTX_TO_SEURAT(STAR.out.filtered_counts, params.outdir, lastFolderName)
-
-    // Make clusters
-    SEURAT(MTX_TO_SEURAT.out.seuratObject, params.outdir)
+    FASTQC( ch_metadado )
+    STAR( ch_metadado )
+    MTX_TO_SEURAT( STAR.out.filtered_counts )
+    SEURAT( MTX_TO_SEURAT.out.seurat_object )
 }
