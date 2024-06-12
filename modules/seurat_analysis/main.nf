@@ -7,11 +7,12 @@ process SEURAT {
     tuple val(meta), path(filtered_matrix)
 
     output:
-    tuple val(meta), path("*.png"), emit: seurat_plots
-    tuple val(meta), path("*.rds"), emit: cluster
+    tuple val(meta), path("plots_*/*.png"), emit: seurat_plots
+    tuple val(meta), path("plots_*/*.rds"), emit: cluster
 
     script:
     """
+    mkdir plots_${meta.id}
     cluster.R \\
         ${filtered_matrix} \\
         plots_${meta.id}
@@ -19,6 +20,7 @@ process SEURAT {
 
     stub:
     """
+    mkdir plots_${meta.id}
     touch plots_${meta.id}/heatmap.png
     touch plots_${meta.id}/qc_before.png
     touch plots_${meta.id}/cluster_final.rds
