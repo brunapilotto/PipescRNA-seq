@@ -1,9 +1,10 @@
 process FASTQC {
     tag "$meta.id"
     debug true
+    publishDir "${params.outdir}/${meta.id}/fastqc", failOnError: false
     
     input:
-    tuple val(meta), val(read_1), val(read_2)
+    tuple val(meta), path(read_1), path(read_2)
 
     output:
     tuple val(meta), path("*.zip") , emit: fastqc_zip
