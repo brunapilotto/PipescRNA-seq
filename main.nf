@@ -10,8 +10,8 @@ log.info """\
 """.stripIndent()
 
 workflow {
-    ch_metadado = Channel.fromPath(params.metadado).splitCsv(sep: ',', header: true)
-                    .map { row -> tuple([id:row['ID']], [fastq1:row['fastq1']], [fastq2:row['fastq2']])}
+    ch_metadado = Channel.fromPath(params.metadados).splitCsv(sep: ',', header: true)
+                    .map { row -> tuple([id:row['ID']], row['fastq1'], row['fastq2'])}
 
     FASTQC( ch_metadado )
     STAR( ch_metadado )
