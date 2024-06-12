@@ -2,15 +2,15 @@ process STAR {
     tag "$meta.id"
     maxForks 1
     debug true
+    publishDir "${params.outdir}/${meta.id}/star", failOnError: false
     
     input:
-    tuple val(meta), val(read_1), val(read_2) 
+    tuple val(meta), path(read_1), path(read_2) 
 
     output:
     tuple val(meta), path("*Log.final.out")         , emit: log_final
     tuple val(meta), path("*Log.out")               , emit: log_out
     tuple val(meta), path("*Log.progress.out")      , emit: log_progress
-    tuple val(meta), path("*Solo.out/Gene/raw")     , emit: raw_counts
     tuple val(meta), path("*Solo.out/Gene/filtered"), emit: filtered_counts
 
     script:
