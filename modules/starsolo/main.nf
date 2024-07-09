@@ -24,12 +24,9 @@ process STARSOLO {
     --sjdbGTFfile ${params.gtf_path} \\
     --readFilesCommand zcat \\
     --soloType CB_UMI_Simple \\
-    --soloFeatures Gene \\
-    --soloUMIlen 10 \\
-    --twopassMode Basic \\
     --outSAMtype None \\
     --runDirPerm All_RWX \\
-    --soloBarcodeReadLength 150 \\
+    --soloBarcodeReadLength 0 \\
     --soloCellFilter EmptyDrops_CR 3000 0.99 10 45000 90000 500 0.01 20000 0.01 10000 \\
     --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \\
     --soloUMIfiltering MultiGeneUMI_CR \\
