@@ -1,10 +1,11 @@
 process FASTQC {
     tag "$meta.id"
     debug true
+    conda "${moduleDir}/environment.yml"
     publishDir "${params.outdir}/${meta.id}/fastqc", failOnError: false
     
     input:
-    tuple val(meta), path(read_1), path(read_2)
+    tuple val(meta), val(reads)
 
     output:
     tuple val(meta), path("*.zip") , emit: fastqc_zip
@@ -12,7 +13,7 @@ process FASTQC {
     
     script:
     """
-    ${params.fastqc_exec} -o ./ -f fastq ${read_1} ${read_2} -t $task.cpus
+    fastqc -o ./ -f fastq ${reads.fastq1} ${reads.fastq2} -t $task.cpus
     """
 
     stub:
