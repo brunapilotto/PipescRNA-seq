@@ -2,8 +2,9 @@
 include { dotenv } from "plugin/nf-dotenv"
 
 // Load environment variables
-params.index_dir       = dotenv("INDEX_DIR")
-params.gtf_path        = dotenv("GTF_PATH")
+params.index_dir = dotenv("INDEX_DIR")
+params.gtf_path  = dotenv("GTF_PATH")
+params.star_exec = dotenv("STAR_EXEC")
 
 // Define other parameters
 params.white_list_path = "${workflow.projectDir}/assets/10x_V2_barcode_whitelist.txt"
