@@ -1,5 +1,16 @@
+// Include dotenv module to load environment variables
+include { dotenv } from "plugin/nf-dotenv"
+
+// Load environment variables
+params.index_dir       = dotenv("INDEX_DIR")
+params.gtf_path        = dotenv("GTF_PATH")
+
+// Define other parameters
+params.white_list_path = "${workflow.projectDir}/assets/10x_V2_barcode_whitelist.txt"
+
+// Include modules
 include { FASTQC        } from './modules/fastqc'
-include { STAR          } from './modules/star'
+include { STARSOLO      } from './modules/starsolo'
 include { MTX_TO_SEURAT } from './modules/mtx_conversion'
 include { SEURAT        } from './modules/seurat_analysis'
 
@@ -10,11 +21,13 @@ log.info """\
 """.stripIndent()
 
 workflow {
-    ch_metadado = Channel.fromPath(params.metadados).splitCsv(sep: ',', header: true)
-                    .map { row -> tuple([id:row['ID']], row['fastq1'], row['fastq2'])}
-
-    FASTQC( ch_metadado )
-    STAR( ch_metadado )
-    MTX_TO_SEURAT( STAR.out.filtered_counts )
-    SEURAT( MTX_TO_SEURAT.out.seurat_object )
+    ch_metadata = Channel.fromPath(params.metadata)
+                    .splitCsv(sep: ',', header: true)
+                    .map { row -> 
+                            tuple([id: row['ID']], [fastq1: row['fastq1'], fastq2: row['fastq2']])
+                        }
+    FASTQC ( ch_metadata )
+    STARSOLO ( ch_metadata )
+    MTX_TO_SEURAT ( STARSOLO.out.filtered_counts )
+    SEURAT ( MTX_TO_SEURAT.out.seurat_object )
 }
