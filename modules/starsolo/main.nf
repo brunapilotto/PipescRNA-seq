@@ -2,7 +2,7 @@ process STARSOLO {
     tag "$meta.id"
     maxForks 1
     debug true
-    conda "${moduleDir}/environment.yml"
+    // conda "${moduleDir}/environment.yml"
     publishDir "${params.outdir}/${meta.id}/star", failOnError: false
     
     input:
@@ -16,21 +16,22 @@ process STARSOLO {
 
     script:
     """
-    STAR --genomeDir ${params.index_dir} \\
-    --readFilesIn ${reads.fastq2} ${reads.fastq1} \\
-    --runThreadN $task.cpus \\
-    --outFileNamePrefix ${meta.id} \\
-    --soloCBwhitelist ${params.white_list_path} \\
-    --sjdbGTFfile ${params.gtf_path} \\
-    --readFilesCommand zcat \\
-    --soloType CB_UMI_Simple \\
-    --outSAMtype None \\
-    --runDirPerm All_RWX \\
-    --soloBarcodeReadLength 0 \\
-    --soloCellFilter EmptyDrops_CR 3000 0.99 10 45000 90000 500 0.01 20000 0.01 10000 \\
-    --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \\
-    --soloUMIfiltering MultiGeneUMI_CR \\
-    --soloUMIdedup 1MM_CR
+    ${params.star_exec} \\
+        --genomeDir ${params.index_dir} \\
+        --readFilesIn ${reads.fastq2} ${reads.fastq1} \\
+        --runThreadN $task.cpus \\
+        --outFileNamePrefix ${meta.id} \\
+        --soloCBwhitelist ${params.white_list_path} \\
+        --sjdbGTFfile ${params.gtf_path} \\
+        --readFilesCommand zcat \\
+        --soloType CB_UMI_Simple \\
+        --outSAMtype None \\
+        --runDirPerm All_RWX \\
+        --soloBarcodeReadLength 0 \\
+        --soloCellFilter EmptyDrops_CR 3000 0.99 10 45000 90000 500 0.01 20000 0.01 10000 \\
+        --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \\
+        --soloUMIfiltering MultiGeneUMI_CR \\
+        --soloUMIdedup 1MM_CR
     """
 
     stub:
