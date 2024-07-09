@@ -100,18 +100,24 @@ It is required to have Conda installed on your machine. Please visit the [Conda 
 
 Once installed, please change the `params.config` file with the path of the installation.
 
+### STAR
+
+It is required to have STAR installed on your machine. Please visit the [STAR Documentation](https://github.com/alexdobin/STAR) for more information.
+
 ### Environment variables (.env)
 
 In the project folder, it is necessary to create a `.env` file with the following information:
 
 - `INDEX_DIR`: path to the precomputed STAR index
 - `GTF_PATH`: reference GTF annotation file
+- `STAR_EXEC`: path to STAR binnaries
 
 Example .env file:
 
 ```bash
 INDEX_DIR="/some/path/reference_cell_ranger/star_index"
 GTF_PATH="/some/path/reference_cell_ranger/refdata-gex-GRCh38-2024-A/genes/genes.gtf"
+STAR_EXEC="/some/path/STAR-2.7.11b/bin/Linux_x86_64_static/STAR"
 ```
 
 ### Nextflow work directory
