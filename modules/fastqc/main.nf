@@ -1,6 +1,5 @@
 process FASTQC {
     tag "$meta.id"
-    debug true
     conda "${moduleDir}/environment.yml"
     publishDir "${params.outdir}/${meta.id}/fastqc", failOnError: false
     

@@ -1,7 +1,6 @@
 process STARSOLO {
     tag "$meta.id"
     maxForks 1
-    debug true
     // conda "${moduleDir}/environment.yml"
     publishDir "${params.outdir}/${meta.id}/star", failOnError: false
     

@@ -15,7 +15,8 @@ process MTX_TO_SEURAT {
         "${filtered_dir}/matrix.mtx" \\
         "${filtered_dir}/barcodes.tsv" \\
         "${filtered_dir}/features.tsv" \\
-        ${meta.id}_filtered_matrix.rds
+        ${meta.id}_filtered_matrix.rds \\
+        ${meta.id}
     """
 
     stub:
