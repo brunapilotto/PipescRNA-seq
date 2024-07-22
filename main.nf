@@ -12,6 +12,7 @@ params.white_list_path = "${workflow.projectDir}/assets/10x_V2_barcode_whitelist
 // Include modules
 include { FASTQC        } from './modules/fastqc'
 include { STARSOLO      } from './modules/starsolo'
+include { QC_SEURAT     } from './modules/qc'
 include { MTX_TO_SEURAT } from './modules/mtx_conversion'
 include { SEURAT        } from './modules/seurat_analysis'
 
@@ -27,8 +28,10 @@ workflow {
                     .map { row -> 
                             tuple([id: row['ID']], [fastq1: row['fastq1'], fastq2: row['fastq2']])
                         }
+    ch_metadata.count().view()
     FASTQC ( ch_metadata )
     STARSOLO ( ch_metadata )
     MTX_TO_SEURAT ( STARSOLO.out.filtered_counts )
-    SEURAT ( MTX_TO_SEURAT.out.seurat_object )
+    QC_SEURAT ( MTX_TO_SEURAT.out.seurat_object )
+    // SEURAT ( MTX_TO_SEURAT.out.seurat_object )
 }
