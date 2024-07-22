@@ -1,4 +1,4 @@
-name: seurat
+name: mtx_conversion
 channels:
   - conda-forge
   - bioconda
