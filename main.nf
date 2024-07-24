@@ -12,9 +12,9 @@ params.white_list_path = "${workflow.projectDir}/assets/10x_V2_barcode_whitelist
 // Include modules
 include { FASTQC        } from './modules/fastqc'
 include { STARSOLO      } from './modules/starsolo'
-include { QC_SEURAT     } from './modules/qc'
 include { MTX_TO_SEURAT } from './modules/mtx_conversion'
-include { SEURAT        } from './modules/seurat_analysis'
+include { QC_SEURAT     } from './modules/qc'
+include { SINGLE_SEURAT } from './modules/single_seurat_analysis'
 
 log.info """\
     Pipeline lncsc-RNAseq
@@ -33,5 +33,5 @@ workflow {
     STARSOLO ( ch_metadata )
     MTX_TO_SEURAT ( STARSOLO.out.filtered_counts )
     QC_SEURAT ( MTX_TO_SEURAT.out.seurat_object )
-    // SEURAT ( MTX_TO_SEURAT.out.seurat_object )
+    SINGLE_SEURAT ( QC_SEURAT.out.clean_object )
 }
