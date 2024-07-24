@@ -1,0 +1,12 @@
+name: single_seurat
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-seurat=5.1.0
+  - r-devtools=2.4.5
+  - r-biocmanager
+  - r-cairo
+  - bioconductor-celldex
+  - bioconductor-singler
