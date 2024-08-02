@@ -11,5 +11,6 @@ sample_name   <- args[5]
 
 expression.matrix <- ReadMtx(mtx = mtx_file, features = feature_file, cells = barcode_file)
 seurat.object <- CreateSeuratObject(counts = expression.matrix, project = sample_name)
+rm(expression.matrix)
 
 saveRDS(seurat.object, file = out.file)
