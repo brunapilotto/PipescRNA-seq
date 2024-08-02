@@ -1,7 +1,12 @@
 #!/usr/bin/env Rscript
 
 BiocManager::install(version = "3.18")
-BiocManager::install("SingleCellExperiment")
+bioc_packages <- c("IRanges", "SingleCellExperiment")
+for (pkg in bioc_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+      BiocManager::install(pkg, force = TRUE)
+  }
+}
 
 library(Seurat)
 library(ggplot2)
@@ -10,12 +15,14 @@ library(patchwork)
 library(Cairo)
 library(SingleCellExperiment)
 library(scater)
+library(scuttle)
 
 args <- commandArgs(trailingOnly=TRUE)
 seurat_mtx <- args[1]
 sample_name <- args[2]
 
 seurat_object <- readRDS(seurat_mtx)
+rm(seurat_mtx)
 
 output_string <- sprintf("num_cells_before = %d\nnum_features_before = %d", ncol(seurat_object), nrow(seurat_object))
 writeLines(output_string, "qc_metrics_before.txt")
@@ -25,11 +32,11 @@ seurat_object[["percent.rb"]] <- PercentageFeatureSet(seurat_object, pattern = "
 
 # Visualize QC metrics as a violin plot
 qc_before_plot <- VlnPlot(seurat_object, features = c("nFeature_RNA","nCount_RNA","percent.mt","percent.rb"), ncol = 4,
-                          cols = c("#e6867a", "#e6867a", "#e6867a", "#e6867a"))
+                          cols = c("#e6867a"), pt.size = 0)
 qc_before_plot[[1]] <- qc_before_plot[[1]] + ggtitle("nGenes") + theme(axis.title.x = element_blank())
 qc_before_plot[[2]] <- qc_before_plot[[2]] + ggtitle("nUMIs") + theme(axis.title.x = element_blank())
 qc_before_plot[[3]] <- qc_before_plot[[3]] + ggtitle("%Mit") + theme(axis.title.x = element_blank())
-qc_before_plot[[4]] <- qc_before_plot[[3]] + ggtitle("%Rb") + theme(axis.title.x = element_blank())
+qc_before_plot[[4]] <- qc_before_plot[[4]] + ggtitle("%Rb") + theme(axis.title.x = element_blank())
 
 qc_before_plot <- wrap_plots(qc_before_plot)
 ggsave(filename = "qc_before.png", plot = qc_before_plot, dpi = 300, width = 12,
@@ -64,38 +71,17 @@ ggsave(filename = "feature-feature.png", plot = feature_feature_relationships_pl
 
 seurat_object <- subset(seurat_object, subset = discard == FALSE)
 
-# BIOCONDUCTOR
-
-sce_object <- as.SingleCellExperiment(seurat_object)
-
-sce_object <- addPerCellQC(sce_object)
-sce_object <- addPerFeatureQC(sce_object)
-umi_cell <- perCellQCMetrics(sce_object)
-
-reasons <- quickPerCellQC(umi_cell)
-colSums(as.matrix(reasons))
-sce_object$discard <- reasons$discard
-
-keep_feature <- nexprs(sce_object,byrow = TRUE,detection_limit = 1) >= 2
-rowData(sce_object)$discard <- ! keep_feature
-table(rowData(sce_object)$discard)
-assay(sce_object, "logcounts_raw") <- log2(counts(sce_object) + 1)
-
-umi.qc <- sce_object[! rowData(sce_object)$discard,! colData(sce_object)$discard]
-
-output_string <- sprintf("num_cells_after = %d\nnum_features_after = %d", ncol(umi.qc), nrow(umi.qc))
+output_string <- sprintf("num_cells_after = %d\nnum_features_after = %d", ncol(seurat_object), nrow(seurat_object))
 writeLines(output_string, "qc_metrics_after.txt")
-
-clean_object <- as.Seurat(umi.qc, data = NULL, project = sample_name)
-saveRDS(clean_object, file = "clean_object.rds")
+saveRDS(seurat_object, file = paste0(sample_name, "_clean_object.rds"))
 
 # Visualize QC metrics as a violin plot
-qc_after_plot <- VlnPlot(clean_object, features = c("nFeature_RNA", "nCount_RNA", "percent.mt", "percent.rb"), ncol = 4,
-                         cols = c("#e6867a", "#e6867a", "#e6867a", "#e6867a"))
+qc_after_plot <- VlnPlot(seurat_object, features = c("nFeature_RNA", "nCount_RNA", "percent.mt", "percent.rb"), ncol = 4,
+                         cols = c("#e6867a"), pt.size = 0)
 qc_after_plot[[1]] <- qc_after_plot[[1]] + ggtitle("nGenes") + theme(axis.title.x = element_blank())
 qc_after_plot[[2]] <- qc_after_plot[[2]] + ggtitle("nUMIs") + theme(axis.title.x = element_blank())
 qc_after_plot[[3]] <- qc_after_plot[[3]] + ggtitle("%Mit") + theme(axis.title.x = element_blank())
-qc_after_plot[[4]] <- qc_after_plot[[3]] + ggtitle("%Rb") + theme(axis.title.x = element_blank())
+qc_after_plot[[4]] <- qc_after_plot[[4]] + ggtitle("%Rb") + theme(axis.title.x = element_blank())
 
 qc_after_plot <- wrap_plots(qc_after_plot)
 ggsave(filename = "qc_after.png", plot = qc_after_plot, dpi = 300, width = 12,
