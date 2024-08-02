@@ -1,12 +1,12 @@
 #!/usr/bin/env Rscript
 
 BiocManager::install(version = "3.18")
-BiocManager::install()
-BiocManager::install("IRanges", force = TRUE)
-BiocManager::install("SingleCellExperiment", force = TRUE)
-BiocManager::install("PCAtools", force = TRUE)
-devtools::install_github('immunogenomics/presto')
-devtools::install_github('chris-mcginnis-ucsf/DoubletFinder')
+bioc_packages <- c("IRanges", "SingleCellExperiment", "PCAtools")
+for (pkg in bioc_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+      BiocManager::install(pkg, force = TRUE)
+  }
+}
 
 library(Seurat)
 library(ggplot2)
@@ -15,8 +15,12 @@ library(patchwork)
 library(devtools)
 library(Cairo)
 library(SingleCellExperiment)
-library(DoubletFinder)
 library(PCAtools)
+
+devtools::install_github('immunogenomics/presto')
+devtools::install_github('chris-mcginnis-ucsf/DoubletFinder')
+
+library(DoubletFinder)
 
 args <- commandArgs(trailingOnly=TRUE)
 clean_seurat_object <- args[1]
@@ -94,7 +98,7 @@ ggsave(filename = "umap_plot.png", plot = umap_plot, dpi = 300, height = 5, widt
 
 
 # find markers for every cluster compared to all remaining cells, report only the positive ones
-cluster_markers <- FindAllMarkers(seurat_object, only.pos = TRUE)
+cluster_markers <- FindAllMarkers(seurat_object, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
 write.table(cluster_markers, "total_cluster_marker_genes.txt", sep="\t", quote = F, row.names = F)
 cluster_markers %>%
   group_by(cluster) %>%
