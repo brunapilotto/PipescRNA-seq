@@ -64,7 +64,7 @@ Each row represents a pair of fastq files (paired end).
 Now, you can run the pipeline using:
 
 ```bash
-nextflow run PipescRNA-seq/main.nf --outdir <OUTDIR> --metadata samplesheet.csv
+nextflow run PipescRNA-seq/main.nf --outdir <OUTDIR> --metadata samplesheet.csv --sample_count 2
 ```
 
 where:
@@ -72,6 +72,8 @@ where:
 - **--metadata**: path to comma-separated file containing information about the samples in the experiment.
 
 - **--outdir**: the output directory where the results will be saved.
+
+- **--sample_count**: number of samples that will be analyzed
 
 ### After finishing
 
