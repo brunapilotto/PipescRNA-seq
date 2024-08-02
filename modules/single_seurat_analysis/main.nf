@@ -14,8 +14,9 @@ process SINGLE_SEURAT {
 
     script:
     """
-    cluster.R \\
-        ${filtered_clean_matrix}
+    single_analysis.R \\
+        ${filtered_clean_matrix} \\
+        ${meta.id}
     rm Rplots.pdf
     """
 
@@ -24,6 +25,6 @@ process SINGLE_SEURAT {
     touch heatmap.png
     touch dimensionality.txt
     touch elbow_plot.pdf
-    touch single_final_cluster.rds
+    touch ${meta.id}_single_final_cluster.rds
     """
 }
