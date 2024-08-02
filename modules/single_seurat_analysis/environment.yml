@@ -6,7 +6,5 @@ channels:
 dependencies:
   - r-seurat=5.1.0
   - r-devtools=2.4.5
-  - r-biocmanager
+  - r-biocmanager=1.30.23
   - r-cairo
-  - bioconductor-celldex
-  - bioconductor-singler
