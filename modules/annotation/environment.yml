@@ -1,0 +1,11 @@
+name: annotation
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - r-seurat=5.1.0
+  - r-biocmanager=1.30.23
+  - bioconductor-celldex
+  - bioconductor-singler
+  - r-cairo
