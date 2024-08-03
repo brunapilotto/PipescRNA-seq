@@ -1,7 +1,0 @@
-name: seurat
-channels:
-  - conda-forge
-  - bioconda
-  - defaults
-dependencies:
-  - r-seurat=5.1.0
