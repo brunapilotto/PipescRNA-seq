@@ -162,3 +162,5 @@ cython_debug/
 # Config
 tower.config
 params.config
+
+.DS_Store
