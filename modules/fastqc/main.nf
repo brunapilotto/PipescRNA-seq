@@ -4,7 +4,7 @@ process FASTQC {
     publishDir "${params.outdir}/${meta.id}/fastqc", failOnError: false
     
     input:
-    tuple val(meta), val(reads)
+    tuple val(meta), val(reads), val(white_list)
 
     output:
     tuple val(meta), path("*.zip") , emit: fastqc_zip
