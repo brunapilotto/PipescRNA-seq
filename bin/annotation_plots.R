@@ -27,15 +27,22 @@ seurat_object <- readRDS(seurat_object)
 ######## SingleR ########
 
 monaco.ref <- celldex::MonacoImmuneData()
-sce <- as.SingleCellExperiment(DietSeurat(seurat_object))
+if (sample_name == "Integrated") {
+  sce <- as.SingleCellExperiment(DietSeurat(seurat_object, assays = "integrated"))
+} else {
+  sce <- as.SingleCellExperiment(DietSeurat(seurat_object))
+}
 predictions <- SingleR(test=sce, assay.type.test=1, 
                        ref=monaco.ref, labels=monaco.ref$label.main)
+rm(sce)
 seurat_object@meta.data$predictions <- predictions$pruned.labels
 seurat_object <- SetIdent(seurat_object, value = "monaco.main")
 predictions_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
                             label.size = 3, group.by = "predictions") +
                             ggtitle("SingleR Predictions")
 ggsave(filename = "predictions_plot.png", plot = predictions_plot, dpi = 300, height=5, units = "in")
+
+rm(seurat_object)
 
 count_table <- table(predictions$pruned.labels)
 cell_type_counts <- as.data.frame(count_table)
