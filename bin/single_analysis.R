@@ -71,6 +71,7 @@ seurat_object <- RunUMAP(seurat_object, dims = 1:chosen.elbow)
 ## pK Identification
 x.res.list <- paramSweep(seurat_object, PCs = 1:chosen.elbow, sct = FALSE)
 x.stats <- summarizeSweep(x.res.list, GT = FALSE)
+rm(x.res.list)
 bcmvn <- find.pK(x.stats)
 pK_bcmvn <- bcmvn$pK[which.max(bcmvn$BCmetric)] %>% as.character() %>% as.numeric()
 
