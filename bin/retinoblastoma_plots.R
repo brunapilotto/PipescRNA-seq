@@ -31,7 +31,18 @@ Cell_types <- c("cones", "lnc_1", "lnc_2", "retinoblastoma")
 
 seurat_object <- readRDS(seurat_object)
 
+genes_to_remove <- c()
+for (Cell in Cell_types) {
+  for (gene in get(Cell)) {
+    if (!(gene %in% rownames(seurat_object))) {
+      message(paste("Gene not found: ", gene))
+      genes_to_remove <- c(genes_to_remove, gene)
+    }
+  }
+}
+
 for(Cell in Cell_types){
-  plot <- VlnPlot(seurat_object, features = get(Cell), pt.size = 0)
+  genes <- setdiff(get(Cell), genes_to_remove)
+  plot <- VlnPlot(seurat_object, features = genes, pt.size = 0)
   ggsave(filename = paste0(Cell, "_", sample_name, "_vln_plot.png"), plot = plot, dpi = 300, width = 15, height = 8, units = "in")
 }
