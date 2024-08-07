@@ -52,9 +52,9 @@ First, prepare a sample sheet with your input data that looks as follows:
 `samplesheet.csv`:
 
 ```csv
-ID,fastq_1,fastq_2
-SRR14800535,SRR14800535_1.fastq.gz,SRR14800535_2.fastq.gz
-SRR14800536,SRR14800536_1.fastq.gz,SRR14800536_2.fastq.gz
+ID,fastq_1,fastq_2,white_list
+SRR14800535,SRR14800535_1.fastq.gz,SRR14800535_2.fastq.gz,V2
+SRR14800536,SRR14800536_1.fastq.gz,SRR14800536_2.fastq.gz,V3
 ```
 
 Each row represents a pair of fastq files (paired end).
