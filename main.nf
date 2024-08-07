@@ -6,9 +6,6 @@ params.index_dir = dotenv("INDEX_DIR")
 params.gtf_path  = dotenv("GTF_PATH")
 params.star_exec = dotenv("STAR_EXEC")
 
-// Define other parameters
-params.white_list_path = "${workflow.projectDir}/assets/10x_V2_barcode_whitelist.txt"
-
 // Include modules
 include { FASTQC                                                   } from './modules/fastqc'
 include { STARSOLO                                                 } from './modules/starsolo'
@@ -31,7 +28,7 @@ workflow {
     ch_metadata = Channel.fromPath(params.metadata)
                     .splitCsv(sep: ',', header: true)
                     .map { row -> 
-                            tuple([id: row['ID']], [fastq1: row['fastq1'], fastq2: row['fastq2']])
+                            tuple([id: row['ID']], [fastq1: row['fastq1'], fastq2: row['fastq2']], row['white_list'])
                         }
 
     FASTQC ( ch_metadata )
