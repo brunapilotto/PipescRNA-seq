@@ -75,6 +75,20 @@ where:
 
 - **--sample_count**: number of samples that will be analyzed
 
+### Help
+
+If you want to know what all the pipeline parameters are, you can run the command:
+
+```bash
+nextflow run PipescRNA-seq/main.nf --help
+```
+
+If you want more information about a specific parameter, you can run the command:
+
+```bash
+nextflow run PipescRNA-seq/main.nf --help param
+```
+
 ### After finishing
 
 Once the pipeline is finished, you can check the results in the [Nextflow work directory](#nextflow-work-directory) and/or your output directory.
