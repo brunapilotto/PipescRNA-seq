@@ -38,7 +38,7 @@ STAR --genomeDir /path/to/index/ \
 --soloUMIdedup 1MM_CR
 ```
 
-The 10X Chromium whitelist files can be found inside the [CellRanger distribution](https://kb.10xgenomics.com/hc/en-us/articles/115004506263-What-is-a-barcode-whitelist). A copy of the whitelist for 5' v2 chemistry is available in the pipeline `assets/` folder. Make sure that the whitelist is compatible with the specific version of the 10X chemistry.
+The 10X Chromium whitelist files can be found inside the [CellRanger distribution](https://kb.10xgenomics.com/hc/en-us/articles/115004506263-What-is-a-barcode-whitelist). A copy of the whitelist for V2 and V3 chemistry is available in the pipeline `assets/` folder. Make sure that the whitelist is compatible with the specific version of the 10X chemistry.
 
 ## Pipeline Usage
 
@@ -47,7 +47,7 @@ The 10X Chromium whitelist files can be found inside the [CellRanger distributio
 
 ### Samplesheet
 
-First, prepare a sample sheet with your input data that looks as follows:
+First, prepare a samplesheet with your input data that looks as follows:
 
 `samplesheet.csv`:
 
