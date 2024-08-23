@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "brunapilotto/PipescRNA-seq pipeline - params.metadata schema",
+    "description": "Schema for the file provided with params.metadata",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "ID": { 
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_]+$",
+                "errorMessage": "Sample name must be provided and cannot contain spaces",
+                "meta": "id"
+            },
+            "fastq1": { 
+                "type": "string",
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "format": "file-path",
+                "errorMessage": "FastQ file for reads 1 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "fastq2": { 
+                "type": "string",
+                "pattern": "^\\S+\\.f(ast)?q\\.gz$",
+                "format": "file-path",
+                "errorMessage": "FastQ file for reads 2 must be provided, cannot contain spaces and must have extension '.fq.gz' or '.fastq.gz'"
+            },
+            "white_list": { 
+                "type": "string",
+                "pattern": "^V[23]$",
+                "default": "V2"
+            }
+        },
+        "required": ["ID", "fastq1", "fastq2"]
+    }
+}
