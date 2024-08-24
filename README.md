@@ -77,7 +77,7 @@ where:
 
 ### Help
 
-If you want to know what all the pipeline parameters are, you can run the command:
+If you want to know all the pipeline parameters, you can run the command:
 
 ```bash
 nextflow run PipescRNA-seq/main.nf --help
