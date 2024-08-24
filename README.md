@@ -116,9 +116,9 @@ It is required to have Conda installed on your machine. Please visit the [Conda 
 
 Once installed, please change the `params.config` file with the path of the installation.
 
-### STAR
+### Docker
 
-It is required to have STAR installed on your machine. Please visit the [STAR Documentation](https://github.com/alexdobin/STAR) for more information.
+It is required to have Docker installed on your machine. Please visit the [Docker Documentation](https://docs.docker.com/engine/install/) for more information.
 
 ### Environment variables (.env)
 
