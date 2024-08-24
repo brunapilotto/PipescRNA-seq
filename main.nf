@@ -6,6 +6,17 @@ params.index_dir = dotenv("INDEX_DIR")
 params.gtf_path  = dotenv("GTF_PATH")
 params.star_exec = dotenv("STAR_EXEC")
 
+// Include nf-schema module to validate the pipeline
+include { validateParameters; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
+validateParameters()
+
+// Print summary of supplied parameters
+log.info """\
+Pipeline lncsc-RNAseq
+======================
+""".stripIndent()
+log.info paramsSummaryLog(workflow)
+
 // Include modules
 include { FASTQC                                                   } from './modules/fastqc'
 include { STARSOLO                                                 } from './modules/starsolo'
@@ -18,17 +29,10 @@ include { RETINOBLASTOMA_PLOTS as INTEGRATION_RETINOBLASTOMA_PLOTS } from './mod
 include { ANNOTATION_PLOTS as SINGLE_ANNOTATION_PLOTS              } from './modules/annotation'
 include { ANNOTATION_PLOTS as INTEGRATION_ANNOTATION_PLOTS         } from './modules/annotation'
 
-log.info """\
-    Pipeline lncsc-RNAseq
-    ======================
-    output: ${params.outdir}
-""".stripIndent()
-
 workflow {
-    ch_metadata = Channel.fromPath(params.metadata)
-                    .splitCsv(sep: ',', header: true)
-                    .map { row -> 
-                            tuple([id: row['ID']], [fastq1: row['fastq1'], fastq2: row['fastq2']], row['white_list'])
+    ch_metadata = Channel.fromList(samplesheetToList(params.metadata, "assets/schema_input.json"))
+                .map { meta, fastq1, fastq2, white_list -> 
+                            tuple(meta, [fastq1: fastq1, fastq2: fastq2], white_list)
                         }
 
     FASTQC ( ch_metadata )

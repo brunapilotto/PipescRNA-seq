@@ -1,0 +1,84 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://raw.githubusercontent.com/nf-core/testpipeline/master/nextflow_schema.json",
+    "title": " pipeline parameters",
+    "description": "",
+    "type": "object",
+    "$defs": {
+        "input_output_options": {
+            "title": "Input/output options",
+            "type": "object",
+            "fa_icon": "fas fa-terminal",
+            "description": "Define where the pipeline should find input data and save output data.",
+            "required": [
+                "outdir",
+                "metadata"
+            ],
+            "properties": {
+                "outdir": {
+                    "type": "string",
+                    "format": "directory-path",
+                    "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
+                    "fa_icon": "fas fa-folder-open"
+                },
+                "metadata": {
+                    "type": "string",
+                    "description": "Path to CSV samplesheet with your input data",
+                    "pattern": "^\\S+\\.csv$",
+                    "format": "file-path",
+                    "mimetype": "csv",
+                    "schema": "/assets/schema_input.json"
+                }
+            }
+        }
+    },
+    "allOf": [
+        {
+            "$ref": "#/$defs/input_output_options"
+        }
+    ],
+    "properties": {
+        "total_cpus": {
+            "type": "integer",
+            "default": 4,
+            "hidden": true
+        },
+        "sample_count": {
+            "type": "integer",
+            "default": 1,
+            "description": "Number of samples that will be analyzed",
+            "minimum": 1
+        },
+        "ANACONDA3": {
+            "type": "string",
+            "description": "Path to ANACONDA3 base",
+            "format": "directory-path"
+        },
+        "index_dir": {
+            "type": "string",
+            "description": "Path to the precomputed STAR index",
+            "format": "directory-path"
+        },
+        "gtf_path": {
+            "type": "string",
+            "description": "Path to reference GTF annotation file",
+            "format": "file-path"
+        },
+        "star_exec": {
+            "type": "string",
+            "description": "Path to STAR binnaries"
+        },
+        "showHidden": {
+            "type": "boolean",
+            "default": false,
+            "description": "Show hidden files in the output directory"
+        }
+    },
+    "required": [
+        "metadata",
+        "ANACONDA3",
+        "index_dir",
+        "gtf_path",
+        "star_exec"
+    ]
+}
