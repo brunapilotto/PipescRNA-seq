@@ -4,7 +4,6 @@ include { dotenv } from "plugin/nf-dotenv"
 // Load environment variables
 params.index_dir = dotenv("INDEX_DIR")
 params.gtf_path  = dotenv("GTF_PATH")
-params.star_exec = dotenv("STAR_EXEC")
 
 // Include nf-schema module to validate the pipeline
 include { validateParameters; paramsSummaryLog; samplesheetToList } from 'plugin/nf-schema'
@@ -19,6 +18,7 @@ log.info paramsSummaryLog(workflow)
 
 // Include modules
 include { FASTQC                                                   } from './modules/fastqc'
+include { PIGZ                                                     } from './modules/pigz'
 include { STARSOLO                                                 } from './modules/starsolo'
 include { MTX_TO_SEURAT                                            } from './modules/mtx_conversion'
 include { QC_SEURAT                                                } from './modules/qc'
@@ -36,7 +36,8 @@ workflow {
                         }
 
     FASTQC ( ch_metadata )
-    STARSOLO ( ch_metadata )
+    PIGZ ( ch_metadata )
+    STARSOLO ( PIGZ.out.white_list )
     MTX_TO_SEURAT ( STARSOLO.out.filtered_counts )
     QC_SEURAT ( MTX_TO_SEURAT.out.seurat_object )
     SINGLE_SEURAT ( QC_SEURAT.out.clean_object )
