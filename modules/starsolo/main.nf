@@ -1,13 +1,11 @@
 process STARSOLO {
     tag "$meta.id"
+    container "biocontainers/star:2.7.10b--h9ee0642_0" 
     maxForks 1
-    conda "${moduleDir}/environment.yml"
     publishDir "${params.outdir}/${meta.id}/star", failOnError: false
-    errorStrategy 'retry'
-    maxRetries 2
     
     input:
-    tuple val(meta), val(reads), val(white_list)
+    tuple val(meta), val(reads), path(white_list)
 
     output:
     tuple val(meta), path("*Log.final.out")         , emit: log_final
@@ -17,13 +15,12 @@ process STARSOLO {
 
     script:
     """
-    pigz -d -k -c -p $task.cpus ${workflow.projectDir}/assets/10x_${white_list}_barcode_whitelist.txt.gz > 10x_${white_list}_barcode_whitelist.txt
-    ${params.star_exec} \\
+    STAR \\
         --genomeDir ${params.index_dir} \\
         --readFilesIn ${reads.fastq2} ${reads.fastq1} \\
         --runThreadN $task.cpus \\
         --outFileNamePrefix ${meta.id} \\
-        --soloCBwhitelist 10x_${white_list}_barcode_whitelist.txt \\
+        --soloCBwhitelist ${white_list} \\
         --sjdbGTFfile ${params.gtf_path} \\
         --readFilesCommand zcat \\
         --soloType CB_UMI_Simple \\
