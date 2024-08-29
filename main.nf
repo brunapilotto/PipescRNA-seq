@@ -20,6 +20,7 @@ log.info paramsSummaryLog(workflow)
 include { FASTQC                                                   } from './modules/fastqc'
 include { PIGZ                                                     } from './modules/pigz'
 include { STARSOLO                                                 } from './modules/starsolo'
+include { MULTIQC                                                  } from './modules/multiqc'
 include { MTX_TO_SEURAT                                            } from './modules/mtx_conversion'
 include { QC_SEURAT                                                } from './modules/qc'
 include { SINGLE_SEURAT                                            } from './modules/single_seurat_analysis'
@@ -38,6 +39,17 @@ workflow {
     FASTQC ( ch_metadata )
     PIGZ ( ch_metadata )
     STARSOLO ( PIGZ.out.white_list )
+
+    multiqc_input = FASTQC.out.fastqc_zip
+                    .map { meta, path -> path }
+                    .collect()
+                    .concat ( STARSOLO.out.log_final
+                                .map { meta, path -> path }
+                                .collect() 
+                            )
+                    .collect()
+    MULTIQC ( multiqc_input )    
+
     MTX_TO_SEURAT ( STARSOLO.out.filtered_counts )
     QC_SEURAT ( MTX_TO_SEURAT.out.seurat_object )
     SINGLE_SEURAT ( QC_SEURAT.out.clean_object )
