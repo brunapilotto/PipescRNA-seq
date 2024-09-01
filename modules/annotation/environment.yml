@@ -8,4 +8,5 @@ dependencies:
   - r-biocmanager=1.30.23
   - bioconductor-celldex
   - bioconductor-singler
+  - bioconductor-aucell
   - r-cairo
