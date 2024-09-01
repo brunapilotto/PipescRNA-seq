@@ -44,7 +44,7 @@ seurat_object <- SetIdent(seurat_object, value = "monaco.main")
 predictions_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
                             label.size = 3, group.by = "predictions") +
                             ggtitle("SingleR Predictions")
-ggsave(filename = "predictions_plot.png", plot = predictions_plot, dpi = 300, height=5, units = "in")
+ggsave(filename = "predictions_plot.png", plot = predictions_plot, dpi = 300, height=5, width=10, units = "in")
 
 count_table <- table(predictions$pruned.labels)
 cell_type_counts <- as.data.frame(count_table)
@@ -70,55 +70,57 @@ ggsave(filename = "annotations.png", plot = annotations, dpi = 300, width = 6,
 
 ######### Hallmaks of cancer #########
 
-hallmarks <- c('HALLMARK_TNFA_SIGNALING_VIA_NFKB',
+hallmarks <- c(
+ #'HALLMARK_TNFA_SIGNALING_VIA_NFKB',
  'HALLMARK_HYPOXIA',
- 'HALLMARK_CHOLESTEROL_HOMEOSTASIS',
+ #'HALLMARK_CHOLESTEROL_HOMEOSTASIS',
  'HALLMARK_MITOTIC_SPINDLE',
  'HALLMARK_WNT_BETA_CATENIN_SIGNALING',
  'HALLMARK_TGF_BETA_SIGNALING',
- 'HALLMARK_IL6_JAK_STAT3_SIGNALING',
+ #'HALLMARK_IL6_JAK_STAT3_SIGNALING',
  'HALLMARK_DNA_REPAIR',
  'HALLMARK_G2M_CHECKPOINT',
  'HALLMARK_APOPTOSIS',
  'HALLMARK_NOTCH_SIGNALING',
  'HALLMARK_ADIPOGENESIS',
- 'HALLMARK_ANDROGEN_RESPONSE',
- 'HALLMARK_MYOGENESIS',
- 'HALLMARK_PROTEIN_SECRETION',
- 'HALLMARK_INTERFERON_ALPHA_RESPONSE',
- 'HALLMARK_INTERFERON_GAMMA_RESPONSE',
- 'HALLMARK_APICAL_JUNCTION',
- 'HALLMARK_APICAL_SURFACE',
- 'HALLMARK_HEDGEHOG_SIGNALING',
- 'HALLMARK_COMPLEMENT',
- 'HALLMARK_UNFOLDED_PROTEIN_RESPONSE',
- 'HALLMARK_PI3K_AKT_MTOR_SIGNALING',
- 'HALLMARK_E2F_TARGETS',
- 'HALLMARK_MYC_TARGETS_V1',
- 'HALLMARK_MYC_TARGETS_V2',
+ #'HALLMARK_ANDROGEN_RESPONSE',
+ #'HALLMARK_MYOGENESIS',
+ #'HALLMARK_PROTEIN_SECRETION',
+ #'HALLMARK_INTERFERON_ALPHA_RESPONSE',
+ #'HALLMARK_INTERFERON_GAMMA_RESPONSE',
+ #'HALLMARK_APICAL_JUNCTION',
+ #'HALLMARK_APICAL_SURFACE',
+ #'HALLMARK_HEDGEHOG_SIGNALING',
+ #'HALLMARK_COMPLEMENT',
+ #'HALLMARK_UNFOLDED_PROTEIN_RESPONSE',
+ #'HALLMARK_PI3K_AKT_MTOR_SIGNALING',
+ #'HALLMARK_E2F_TARGETS',
+ #'HALLMARK_MYC_TARGETS_V1',
+ #'HALLMARK_MYC_TARGETS_V2',
  'HALLMARK_INFLAMMATORY_RESPONSE',
  'HALLMARK_XENOBIOTIC_METABOLISM',
- 'HALLMARK_FATTY_ACID_METABOLISM',
- 'HALLMARK_OXIDATIVE_PHOSPHORYLATION',
+ #'HALLMARK_FATTY_ACID_METABOLISM',
+ #'HALLMARK_OXIDATIVE_PHOSPHORYLATION',
  'HALLMARK_GLYCOLYSIS',
- 'HALLMARK_REACTIVE_OXYGEN_SPECIES_PATHWAY',
- 'HALLMARK_P53_PATHWAY',
- 'HALLMARK_UV_RESPONSE_UP',
- 'HALLMARK_UV_RESPONSE_DN',
+ #'HALLMARK_REACTIVE_OXYGEN_SPECIES_PATHWAY',
+ #'HALLMARK_P53_PATHWAY',
+ #'HALLMARK_UV_RESPONSE_UP',
+ #'HALLMARK_UV_RESPONSE_DN',
  'HALLMARK_ANGIOGENESIS',
- 'HALLMARK_HEME_METABOLISM',
- 'HALLMARK_COAGULATION',
- 'HALLMARK_IL2_STAT5_SIGNALING',
- 'HALLMARK_BILE_ACID_METABOLISM',
- 'HALLMARK_PEROXISOME',
- 'HALLMARK_ALLOGRAFT_REJECTION',
- 'HALLMARK_SPERMATOGENESIS',
- 'HALLMARK_KRAS_SIGNALING_UP',
- 'HALLMARK_KRAS_SIGNALING_DN',
- 'HALLMARK_PANCREAS_BETA_CELLS',
- 'HALLMARK_ESTROGEN_RESPONSE_EARLY',
- 'HALLMARK_ESTROGEN_RESPONSE_LATE',
- 'HALLMARK_MTORC1_SIGNALING')
+ #'HALLMARK_HEME_METABOLISM',
+ 'HALLMARK_COAGULATION'
+ #'HALLMARK_IL2_STAT5_SIGNALING',
+ #'HALLMARK_BILE_ACID_METABOLISM',
+ #'HALLMARK_PEROXISOME',
+ #'HALLMARK_ALLOGRAFT_REJECTION',
+ #'HALLMARK_SPERMATOGENESIS',
+ #'HALLMARK_KRAS_SIGNALING_UP',
+ #'HALLMARK_KRAS_SIGNALING_DN',
+ #'HALLMARK_PANCREAS_BETA_CELLS',
+ #'HALLMARK_ESTROGEN_RESPONSE_EARLY',
+ #'HALLMARK_ESTROGEN_RESPONSE_LATE',
+ #'HALLMARK_MTORC1_SIGNALING'
+)
 gsea_hallmarks <- fromJSON(GSEA_hallmarks_json_path)
 genes_list <- list()
 
@@ -138,7 +140,12 @@ for (category in names(genes_list)) {
 }
 rm(genes_list)
 
-counts <- GetAssayData(seurat_object, layer = "data")
+if (sample_name == "Integrated") {
+  counts <- GetAssayData(seurat_object, layer = "data")
+} else {
+  counts <- GetAssayData(seurat_object, layer = "counts")
+}
+
 ranking <- AUCell_buildRankings(counts)
 
 if (!"hmc" %in% colnames(seurat_object@meta.data)) {
@@ -156,7 +163,7 @@ for (category in names(filtered_genes_list)) {
 hmc_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
                             label.size = 3, group.by = "hmc") +
                             ggtitle("Hallmarks")
-ggsave(filename = "hmc_plot.png", plot = hmc_plot, dpi = 300, height=5, units = "in")
+ggsave(filename = "hmc_plot.png", plot = hmc_plot, dpi = 300, height=5, width=10, units = "in")
 
 
 ######### EMT #########
