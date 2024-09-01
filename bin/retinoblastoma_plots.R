@@ -1,48 +1,96 @@
 #!/usr/bin/env Rscript
+BiocManager::install(version = "3.18")
+bioc_packages <- c("mixtools")
+for (pkg in bioc_packages) {
+  if (!requireNamespace(pkg, quietly = TRUE)) {
+      BiocManager::install(pkg, force = TRUE, quietly = TRUE)
+  }
+}
 
 library(Seurat)
 library(ggplot2)
 library(dplyr)
 library(patchwork)
+library(jsonlite)
+library(AUCell)
 
 args <- commandArgs(trailingOnly=TRUE)
 seurat_object <- args[1]
 sample_name <- args[2]
-
-retinoblastoma <- c("MKI67", "CDK1", "TOP2A", "KIF14", "UBE2C", "CDC25C")
-rod_precursor <- c("NRL", "RCVRN")
-retinoma <- c("CDCA7", "HELLS", "MCM3", "PCNA")
-rods <- c("CNGA1", "GNAT1", "NR2E3", "PDE6A", "PDE6G", "RHO")
-bipolar_cells <- c("CA10", "LRTM1", "PCP2", "PRKCA", "TRPM1", "VSX1", "VSX2")
-muller_glia <- c("MIR9-1HG", "CLU", "GLUL", "RLBP1", "SPP1", "VIM")
-microglia <- c("AIF1", "C1QA", "HLA-DPA1", "HLA-DRA", "PTPRC")
-cones <- c("RXRG", "CRX", "THRB", "ARR3", "GNB3", "OPN1LW", "PDE6H", "GNGT2")
-lnc_1 <- c("LINC00152", "LINC00115", "LINC00858", "LINC00202", "LINC00324",
-         "LINC00488", "PVT1", "CASC9", "HEIH", "HCP5", 
-         "XIST", "FTX", "HOTTIP", "ROR", "DANCR", 
-         "THOR", "PANDAR", "PlncRNA-1", "BANCR", "CCAT1", 
-         "MIAT", "HIF1A‐AS1", "ANRIL", "TP73‐AS1", "UCA1")
-lnc_2 <- c("TUG1", "MALAT1", "FOXD2‐AS1", "PROX1‐AS1", "ELFN1‐AS1", 
-         "ADPGK‐AS1", "ZNRD1‐AS1", "ILF3‐AS1", "AFAP1-AS1", "LEF1‐AS1", 
-         "TMPO‐AS1", "TRPM2‐AS", "HOXA11‐AS", "SNHG14", "SNHG16", 
-         "SNHG20", "ZFPM2‐AS1", "FEZF1‐AS1", "MIR17HG", "MIR7‐3HG", 
-         "HOTAIR", "KCNQ1OT1", "SND1-IT1", "NEAT1")
-Cell_types <- c("cones", "lnc_1", "lnc_2", "retinoblastoma")
+retinoblastoma_json <- args[3]
 
 seurat_object <- readRDS(seurat_object)
+retinoblastoma_cell_types <- fromJSON(retinoblastoma_json)
 
-genes_to_remove <- c()
-for (Cell in Cell_types) {
-  for (gene in get(Cell)) {
-    if (!(gene %in% rownames(seurat_object))) {
-      message(paste("Gene not found: ", gene))
-      genes_to_remove <- c(genes_to_remove, gene)
-    }
-  }
+########## RB cell types ##########
+
+genes_list <- list()
+
+cell_types <- c(
+  "Glial",
+  "Cancer-associated_Fibroblasts",
+  "Rod-like",
+  "Cone-like",
+  "Cone_precursor-like",
+  "MKI67+Cone_precursor",
+  "Neural_cells"
+)
+
+for (category in cell_types) {
+  genes_list[[category]] <- retinoblastoma_cell_types[[category]]$geneSymbols
 }
 
-for(Cell in Cell_types){
-  genes <- setdiff(get(Cell), genes_to_remove)
-  plot <- VlnPlot(seurat_object, features = genes, pt.size = 0)
-  ggsave(filename = paste0(Cell, "_", sample_name, "_vln_plot.png"), plot = plot, dpi = 300, width = 15, height = 8, units = "in")
+genes_in_seurat <- rownames(seurat_object)
+filtered_genes_list <- list()
+for (category in names(genes_list)) {
+  genes_present <- intersect(genes_list[[category]], genes_in_seurat)
+  percentage_present <- length(genes_present) / length(genes_list[[category]]) * 100
+  
+  if (percentage_present > 20) {
+    filtered_genes_list[[category]] <- genes_list[[category]]
+  }
+}
+rm(genes_list)
+
+if (sample_name == "Integrated") {
+  counts <- GetAssayData(seurat_object, layer = "data")
+} else {
+  counts <- GetAssayData(seurat_object, layer = "counts")
+}
+
+ranking <- AUCell_buildRankings(counts)
+
+if (!"RBcells" %in% colnames(seurat_object@meta.data)) {
+  seurat_object$RBcells <- NA
+}
+
+for (category in names(filtered_genes_list)) {
+  cell_AUC <- AUCell_calcAUC(filtered_genes_list[[category]], ranking)
+  cell_assigment <- AUCell_exploreThresholds(cell_AUC, plotHist = TRUE, assign=TRUE)
+  seurat_object$RBcells <- ifelse(colnames(seurat_object) %in% cell_assigment$geneSet$assignment, 
+                              gsub("_", " ", category), 
+                              seurat_object$RBcells)
+}
+
+rb_cells_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
+                            label.size = 3, group.by = "RBcells") +
+                            ggtitle("Cell types in human RB")
+ggsave(filename = "rb_cells_plot.png", plot = rb_cells_plot, dpi = 300, height=7, width=10, units = "in")
+
+########## RB cells ##########
+
+genes_present <- intersect(retinoblastoma_cell_types$Retinoblastoma$geneSymbols, genes_in_seurat)
+percentage_present <- length(genes_present) / length(retinoblastoma_cell_types$Retinoblastoma$geneSymbols) * 100
+if (percentage_present > 20) {
+  cell_AUC <- AUCell_calcAUC(retinoblastoma_cell_types$Retinoblastoma$geneSymbols, ranking)
+  cell_assigment <- AUCell_exploreThresholds(cell_AUC, plotHist = TRUE, assign=TRUE)
+  seurat_object$RB <- ifelse(colnames(seurat_object) %in% cell_assigment$geneSet$assignment, 
+                              "RB", 
+                              NA)
+  RB_plot <- DimPlot(seurat_object, repel = TRUE, 
+                            label.size = 3, group.by = "RB") +
+                            ggtitle("Retinoblastoma cells")
+  ggsave(filename = "RB_plot.png", plot = RB_plot, dpi = 300, height=5, units = "in")
+} else {
+  print("Retinoblastoma cells not present in the dataset")
 }
