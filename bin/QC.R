@@ -1,13 +1,5 @@
 #!/usr/bin/env Rscript
 
-BiocManager::install(version = "3.18")
-bioc_packages <- c("IRanges", "SingleCellExperiment")
-for (pkg in bioc_packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-      BiocManager::install(pkg, force = TRUE, quietly = TRUE)
-  }
-}
-
 library(Seurat)
 library(ggplot2)
 library(dplyr)
