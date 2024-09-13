@@ -8,4 +8,6 @@ dependencies:
   - r-devtools=2.4.5
   - r-cairo
   - r-biocmanager=1.30.23
-  - bioconductor-scater
+  - bioconda::bioconductor-scater
+  - bioconda::bioconductor-singlecellexperiment==1.24.0
+  - bioconda::bioconductor-iranges==2.36.0
