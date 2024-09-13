@@ -43,11 +43,10 @@
             "default": 4,
             "hidden": true
         },
-        "sample_count": {
-            "type": "integer",
-            "default": 1,
-            "description": "Number of samples that will be analyzed",
-            "minimum": 1
+        "skip_integration": {
+            "type": "boolean",
+            "default": false,
+            "description": "Skip the integration step"
         },
         "ANACONDA3": {
             "type": "string",
@@ -68,6 +67,16 @@
             "type": "boolean",
             "default": false,
             "description": "Show hidden files in the output directory"
+        },
+        "skip_annotation": {
+            "type": "boolean",
+            "default": false,
+            "description": "Skip the annotation step"
+        },
+        "skip_retinoblastoma": {
+            "type": "boolean",
+            "default": false,
+            "description": "Skip the retinoblastoma analysis step"
         }
     },
     "required": [
