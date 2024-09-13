@@ -1,13 +1,5 @@
 #!/usr/bin/env Rscript
 
-BiocManager::install(version = "3.18")
-bioc_packages <- c("IRanges", "SingleCellExperiment", "PCAtools")
-for (pkg in bioc_packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-      BiocManager::install(pkg, force = TRUE, quietly = TRUE)
-  }
-}
-
 library(Seurat)
 library(ggplot2)
 library(dplyr)
@@ -49,11 +41,10 @@ pca_stdev <- Stdev(seurat_object, reduction = "pca")
 pca_variance <- pca_stdev^2
 pca_variance_explained_percent <- (pca_variance / sum(pca_variance)) * 100
 chosen.elbow <- findElbowPoint(pca_variance_explained_percent)
-if (chosen.elbow < 10) {
-  chosen.elbow <- 10
-}
-output_string <- sprintf("Elbow point in the percentage of variance explained by successive PCs: %d", chosen.elbow)
-writeLines(output_string, "dimensionality.txt")
+output_string_1 <- sprintf("Elbow point in the percentage of variance explained by successive PCs: %d", chosen.elbow)
+writeLines(output_string_1, "elbow_point.txt")
+output_string_2 <- sprintf("Percentage of variance explained by the first %d PCs: %f", chosen.elbow, sum(pca_variance_explained_percent[1:chosen.elbow]))
+writeLines(output_string_2, "percentage_of_variance.txt")
 pdf(file = "elbow_plot.pdf", width = 8, height = 6)
 par(mar = c(5, 4, 4, 2) + 0.1)
 plot(pca_variance_explained_percent, xlab = "PC", ylab = "Variance explained (%)")
