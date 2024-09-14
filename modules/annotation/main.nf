@@ -7,8 +7,9 @@ process ANNOTATION_PLOTS {
     tuple val(meta), path(seurat_object)
 
     output:
-    tuple val(meta), path("*.png"), emit: annotation_plots
-    tuple val(meta), path("*.txt"), emit: annotation_metrics
+    tuple val(meta), path("*.png") , emit: annotation_plots
+    tuple val(meta), path("*.txt") , emit: annotation_metrics
+    tuple val(meta), path("*.json"), emit: immuno_signature
 
     script:
     """
@@ -21,5 +22,6 @@ process ANNOTATION_PLOTS {
     """
     touch predictions_plot.png
     touch cell_type_counts.txt
+    touch immuno_signature.json
     """
 }
