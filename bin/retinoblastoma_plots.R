@@ -14,6 +14,29 @@ library(patchwork)
 library(jsonlite)
 library(AUCell)
 
+color_list <- c(
+    "#264653",  # Dark Teal
+    "#2a9d8f",  # Emerald Green
+    "#e9c46a",  # Mustard Yellow
+    "#f4a261",  # Pastel Orange
+    "#e76f51",  # Burnt Sienna
+    "#6b705c",  # CadetDark Olive Green
+    "#457b9d",  # Steel Blue
+    "#a8dadc",  # Light Blue
+    "#f7a399",  # Peach Pink
+    "#ffe8d6",  # Light Beige
+    "#a5a58d",  # Sage Gray
+    "#474747",  # Dark Gray
+    "#9a8c98",  # Grayish Lilac
+    "#c3aed6",  # Light Lavender
+    "#5e6472",  # Slate Blue
+    "#e63946",  # Crimson Red
+    "#adc178",  # Light Olive Green
+    "#93e1d8",  # Pastel Aqua
+    "#606c38",  # Dark Olive Green
+    "#1d3557"   # Deep Navy Blue
+)
+
 args <- commandArgs(trailingOnly=TRUE)
 seurat_object <- args[1]
 sample_name <- args[2]
@@ -72,7 +95,7 @@ for (category in names(filtered_genes_list)) {
 }
 
 cells_type_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
-                            label.size = 3, group.by = "CellType") +
+                            label.size = 3, group.by = "CellType", cols=color_list) +
                             ggtitle("Cell types")
 ggsave(filename = "cells_type_plot.png", plot = cells_type_plot, dpi = 300, height=7, width=10, units = "in")
 
@@ -123,7 +146,7 @@ for (category in names(filtered_genes_list)) {
 }
 
 rb_cells_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
-                            label.size = 3, group.by = "RBcells") +
+                            label.size = 3, group.by = "RBcells", cols=color_list) +
                             ggtitle("Cell types in human RB")
 ggsave(filename = "rb_cells_plot.png", plot = rb_cells_plot, dpi = 300, height=7, width=10, units = "in")
 
