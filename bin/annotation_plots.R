@@ -10,6 +10,29 @@ library(SingleR)
 library(SingleCellExperiment)
 library(jsonlite)
 
+color_list <- c(
+    "#264653",  # Dark Teal
+    "#2a9d8f",  # Emerald Green
+    "#e9c46a",  # Mustard Yellow
+    "#f4a261",  # Pastel Orange
+    "#e76f51",  # Burnt Sienna
+    "#6b705c",  # CadetDark Olive Green
+    "#457b9d",  # Steel Blue
+    "#a8dadc",  # Light Blue
+    "#f7a399",  # Peach Pink
+    "#ffe8d6",  # Light Beige
+    "#a5a58d",  # Sage Gray
+    "#474747",  # Dark Gray
+    "#9a8c98",  # Grayish Lilac
+    "#c3aed6",  # Light Lavender
+    "#5e6472",  # Slate Blue
+    "#e63946",  # Crimson Red
+    "#adc178",  # Light Olive Green
+    "#93e1d8",  # Pastel Aqua
+    "#606c38",  # Dark Olive Green
+    "#1d3557"   # Deep Navy Blue
+)
+
 args <- commandArgs(trailingOnly=TRUE)
 seurat_object <- args[1]
 sample_name <- args[2]
@@ -32,7 +55,7 @@ rm(monaco.ref)
 seurat_object@meta.data$predictions <- predictions$pruned.labels
 seurat_object <- SetIdent(seurat_object, value = "monaco.main")
 predictions_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
-                            label.size = 3, group.by = "predictions") +
+                            label.size = 3, group.by = "predictions", cols=color_list) +
                             ggtitle("SingleR Predictions")
 ggsave(filename = "predictions_plot.png", plot = predictions_plot, dpi = 300, height=6, width=9, units = "in")
 
@@ -49,7 +72,7 @@ rm(predictions)
 top_genes_list <- list()
 for (cell_type in cell_type_counts$Cell_Type) {
   unique_genes <- unique(unlist(all.markers[[cell_type]]))
-  top_genes <- head(unique_genes, 200)
+  top_genes <- head(unique_genes, 100)
   top_genes_list[[cell_type]] <- top_genes
 }
 write_json(top_genes_list, "top_genes_by_cell_type.json")
