@@ -9,6 +9,7 @@ process RETINOBLASTOMA_PLOTS {
     output:
     tuple val(meta), path("*.png"), emit: retinoblastoma_plots
     tuple val(meta), path("*.txt"), emit: retinoblastoma_metrics
+    tuple val(meta), path("*.rds"), emit: retinoblastoma_object
     tuple val(meta), path("*.pdf"), emit: auc_plots
 
     script:
@@ -23,6 +24,7 @@ process RETINOBLASTOMA_PLOTS {
     """
     touch cones_${meta.id}_vln_plot.png
     touch cell_type_counts.txt
+    touch ${meta.id}_signatures.rds
     touch Rplots.pdf
     """
 }

@@ -189,3 +189,5 @@ if (percentage_present > 20) {
 } else {
   print("EMT hallmark not present in the dataset")
 }
+
+saveRDS(seurat_object, file = paste0(sample_name, "_signatures.rds"))
