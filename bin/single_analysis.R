@@ -55,6 +55,7 @@ dev.off()
 seurat_object <- FindNeighbors(seurat_object, dims = 1:chosen.elbow)
 seurat_object <- FindClusters(seurat_object, resolution = 0.55)
 seurat_object <- RunUMAP(seurat_object, dims = 1:chosen.elbow)
+seurat_object <- RunTSNE(seurat_object, reduction = "pca", dims = 1:chosen.elbow)
 
 
 ######## Remove Doublets ########
@@ -87,7 +88,9 @@ writeLines(output_string, "qc_metrics_final.txt")
 umap_plot <- DimPlot(seurat_object, reduction = "umap", label.size = 4, repel = TRUE, label = TRUE,
                      group.by = "seurat_clusters") + ggtitle("Seurat Clustering")
 ggsave(filename = "umap_plot.png", plot = umap_plot, dpi = 300, height = 5, width = 7, units = "in")
-
+tsne_plot <- DimPlot(seurat_object, reduction = "tsne", label.size = 4, repel = TRUE, label = TRUE,
+                     group.by = "seurat_clusters") + ggtitle("Seurat Clustering")
+ggsave(filename = "tsne_plot.png", plot = tsne_plot, dpi = 300, height = 5, width = 7, units = "in")
 
 # find markers for every cluster compared to all remaining cells, report only the positive ones
 cluster_markers <- FindAllMarkers(seurat_object, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)

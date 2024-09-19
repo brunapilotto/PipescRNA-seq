@@ -94,10 +94,14 @@ for (category in names(filtered_genes_list)) {
                               seurat_object$CellType)
 }
 
-cells_type_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
+cells_type_plot_umap <- DimPlot(seurat_object, label = TRUE, repel = TRUE, reduction = "umap",
                             label.size = 3, group.by = "CellType", cols=color_list) +
                             ggtitle("Cell types")
-ggsave(filename = "cells_type_plot.png", plot = cells_type_plot, dpi = 300, height=7, width=10, units = "in")
+ggsave(filename = "cells_type_plot_umap.png", plot = cells_type_plot_umap, dpi = 300, height=7, width=10, units = "in")
+cells_type_plot_tsne <- DimPlot(seurat_object, label = TRUE, repel = TRUE, reduction = "tsne",
+                            label.size = 3, group.by = "CellType", cols=color_list) +
+                            ggtitle("Cell types")
+ggsave(filename = "cells_type_plot_tsne.png", plot = cells_type_plot_tsne, dpi = 300, height=7, width=10, units = "in")
 
 cell_type_counts_df <- as.data.frame(table(seurat_object$CellType))
 colnames(cell_type_counts_df) <- c("CellType", "Count")
@@ -145,10 +149,14 @@ for (category in names(filtered_genes_list)) {
                               seurat_object$RBcells)
 }
 
-rb_cells_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
+rb_cells_plot_umap <- DimPlot(seurat_object, label = TRUE, repel = TRUE, reduction = "umap",
                             label.size = 3, group.by = "RBcells", cols=color_list) +
                             ggtitle("Cell types in human RB")
-ggsave(filename = "rb_cells_plot.png", plot = rb_cells_plot, dpi = 300, height=7, width=10, units = "in")
+ggsave(filename = "rb_cells_plot_umap.png", plot = rb_cells_plot_umap, dpi = 300, height=7, width=10, units = "in")
+rb_cells_plot_tsne <- DimPlot(seurat_object, label = TRUE, repel = TRUE, reduction = "tsne",
+                            label.size = 3, group.by = "RBcells", cols=color_list) +
+                            ggtitle("Cell types in human RB")
+ggsave(filename = "rb_cells_plot_tsne.png", plot = rb_cells_plot_tsne, dpi = 300, height=7, width=10, units = "in")
 
 cell_type_in_rb_counts <- table(seurat_object$RBcells)
 cell_type_counts_df <- as.data.frame(cell_type_in_rb_counts)
@@ -165,10 +173,14 @@ if (percentage_present > 20) {
   seurat_object$EMT <- ifelse(colnames(seurat_object) %in% cell_assigment$geneSet$assignment, 
                               "EMT", 
                               NA)
-  emt_plot <- DimPlot(seurat_object, repel = TRUE, 
+  emt_plot_umap <- DimPlot(seurat_object, repel = TRUE, reduction = "umap",
                             label.size = 3, group.by = "EMT") +
                             ggtitle("EMT")
-  ggsave(filename = "emt_plot.png", plot = emt_plot, dpi = 300, height=5, units = "in")
+  ggsave(filename = "emt_plot_umap.png", plot = emt_plot_umap, dpi = 300, height=5, units = "in")
+  emt_plot_tsne <- DimPlot(seurat_object, repel = TRUE, reduction = "tsne",
+                            label.size = 3, group.by = "EMT") +
+                            ggtitle("EMT")
+  ggsave(filename = "emt_plot_tsne.png", plot = emt_plot_tsne, dpi = 300, height=5, units = "in")
 
   EMT_counts <- table(seurat_object$EMT)
   EMT_counts_df <- as.data.frame(EMT_counts)

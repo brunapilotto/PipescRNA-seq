@@ -54,10 +54,14 @@ rm(sce)
 rm(monaco.ref)
 seurat_object@meta.data$predictions <- predictions$pruned.labels
 seurat_object <- SetIdent(seurat_object, value = "monaco.main")
-predictions_plot <- DimPlot(seurat_object, label = TRUE, repel = TRUE, 
+predictions_plot_umap <- DimPlot(seurat_object, label = TRUE, repel = TRUE, reduction = "umap", 
                             label.size = 3, group.by = "predictions", cols=color_list) +
                             ggtitle("SingleR Predictions")
-ggsave(filename = "predictions_plot.png", plot = predictions_plot, dpi = 300, height=6, width=9, units = "in")
+ggsave(filename = "predictions_plot_umap.png", plot = predictions_plot_umap, dpi = 300, height=6, width=9, units = "in")
+predictions_plot_tsne <- DimPlot(seurat_object, label = TRUE, repel = TRUE, reduction = "tsne", 
+                            label.size = 3, group.by = "predictions", cols=color_list) +
+                            ggtitle("SingleR Predictions")
+ggsave(filename = "predictions_plot_tsne.png", plot = predictions_plot_tsne, dpi = 300, height=6, width=9, units = "in")
 
 count_table <- table(predictions$pruned.labels)
 cell_type_counts <- as.data.frame(count_table)
