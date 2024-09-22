@@ -63,6 +63,9 @@ predictions_plot_tsne <- DimPlot(seurat_object, label = TRUE, repel = TRUE, redu
                             ggtitle("SingleR Predictions")
 ggsave(filename = "predictions_plot_tsne.png", plot = predictions_plot_tsne, dpi = 300, height=6, width=9, units = "in")
 
+saveRDS(seurat_object, file = paste0(sample_name, "_annotation.rds"))
+rm(seurat_object)
+
 count_table <- table(predictions$pruned.labels)
 cell_type_counts <- as.data.frame(count_table)
 colnames(cell_type_counts) <- c("Cell_Type", "Count")
