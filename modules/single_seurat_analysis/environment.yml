@@ -6,5 +6,7 @@ channels:
 dependencies:
   - r-seurat=5.1.0
   - r-devtools=2.4.5
-  - r-biocmanager=1.30.23
   - r-cairo
+  - bioconductor-pcatools==2.14.0
+  - bioconda::bioconductor-singlecellexperiment==1.24.0
+  - bioconda::bioconductor-iranges==2.36.0

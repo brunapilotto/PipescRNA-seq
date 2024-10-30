@@ -25,6 +25,8 @@ include { MTX_TO_SEURAT                                            } from './mod
 include { QC_SEURAT                                                } from './modules/qc'
 include { SINGLE_SEURAT                                            } from './modules/single_seurat_analysis'
 include { INTEGRATION                                              } from './modules/seurat_integration'
+include { UPDATE_SIGNATURE as SINGLE_UPDATE_SIGNATURE              } from './modules/update_signature'
+include { UPDATE_SIGNATURE as INTEGRATION_UPDATE_SIGNATURE         } from './modules/update_signature'
 include { RETINOBLASTOMA_PLOTS as SINGLE_RETINOBLASTOMA_PLOTS      } from './modules/retinoblastoma_plots'
 include { RETINOBLASTOMA_PLOTS as INTEGRATION_RETINOBLASTOMA_PLOTS } from './modules/retinoblastoma_plots'
 include { ANNOTATION_PLOTS as SINGLE_ANNOTATION_PLOTS              } from './modules/annotation'
@@ -53,17 +55,35 @@ workflow {
     MTX_TO_SEURAT ( STARSOLO.out.filtered_counts )
     QC_SEURAT ( MTX_TO_SEURAT.out.seurat_object )
     SINGLE_SEURAT ( QC_SEURAT.out.clean_object )
-    SINGLE_RETINOBLASTOMA_PLOTS ( SINGLE_SEURAT.out.single_seurat_object )
-    SINGLE_ANNOTATION_PLOTS ( SINGLE_SEURAT.out.single_seurat_object )
+    
+    if ( params.skip_annotation == false ) {
+        SINGLE_ANNOTATION_PLOTS ( SINGLE_SEURAT.out.single_seurat_object )
+    }
+    if ( params.skip_retinoblastoma == false ) {
+        SINGLE_UPDATE_SIGNATURE ( SINGLE_ANNOTATION_PLOTS.out.immuno_signature )
+        SINGLE_RETINOBLASTOMA_PLOTS ( 
+            SINGLE_SEURAT.out.single_seurat_object
+            .combine( SINGLE_UPDATE_SIGNATURE.out.updated_signature, by: 0 ) 
+        )
+    }
+    
 
-    if ( params.sample_count >= 2 ) {
+    if ( params.skip_integration == false ) {
         single_objects = SINGLE_SEURAT.out.single_seurat_object
                     .map { meta, path -> path }
                     .collect()
         INTEGRATION ( single_objects )
         integrated_object = INTEGRATION.out.merged_object
                             .map { path -> tuple([id: 'Integrated'], path) }
-        INTEGRATION_RETINOBLASTOMA_PLOTS ( integrated_object )
-        INTEGRATION_ANNOTATION_PLOTS ( integrated_object )
+        if ( params.skip_annotation == false ) {
+            INTEGRATION_ANNOTATION_PLOTS ( integrated_object )
+        }
+        if ( params.skip_retinoblastoma == false ) {
+            INTEGRATION_UPDATE_SIGNATURE ( INTEGRATION_ANNOTATION_PLOTS.out.immuno_signature )
+            INTEGRATION_RETINOBLASTOMA_PLOTS ( 
+                integrated_object
+                .combine( INTEGRATION_UPDATE_SIGNATURE.out.updated_signature, by: 0 ) 
+            )
+        }
     }
 }

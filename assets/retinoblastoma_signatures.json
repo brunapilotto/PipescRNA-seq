@@ -1,0 +1,60 @@
+{
+    "Retinoblastoma": {
+        "geneSymbols": [
+            "MKI67", "CDK1", "TOP2A", "KIF14", "UBE2C", "CDC25C"
+        ]
+    },
+    "Glial": {
+        "geneSymbols": [
+        "CD68", "CD74", "HLA-DRA", "HLA-DRB1", "HLA-DPA1", "C1QB", 
+        "C1QA", "CLU", "GFAP", "PAX2", "GPX3", "HES1", "SOX2" 
+        ]
+    },
+    "CAF": {
+        "geneSymbols": [
+        "ACTA2", "FGF9", "VIM"
+        ]
+    },
+    "Rod-like":{
+        "geneSymbols": [
+        "RHO", "PDE6A", "NRL", "CNGA1", "GNAT1", "PDE6B", "GNGT1", "CRX", "RXRG", "THRB",
+        "NR2E3", "PDE6G"
+        ]
+    },
+    "Cone-like": {
+        "geneSymbols": [
+        "PDE6H", "GNGT2", "ARR3", "GUCA1C", "GNAT2", "CRX", "RXRG", "THRB"
+        ]
+    },
+    "Cone_precursor-like": {
+        "geneSymbols": [
+        "CRX", "RXRG", "THRB", "MKI67"
+        ]
+    },
+    "MKI67+Cone_precursor": {
+        "geneSymbols": [
+        "CRX", "RXRG", "THRB", "MKI67", "KIF14" 
+        ]
+    },
+    "Neural_cells": {
+        "geneSymbols": [
+        "CNTN2", "GAP43", "MAP2"
+        ]
+    },
+    "EMT": {
+        "geneSymbols": [
+            "VIM", "FN1", "SPARC", "CDH11", "EPCAM", "EMP3",
+            "VCAN", "SPINT2", "HTRA1", "MAP7", "MMP9", "CLDN3",
+            "IGFBP4", "FXYD3", "LOX", "TCF4", "CALD1", "CYP1B1", 
+            "LGALS1", "NR2F1", "NRP1", "CCL2", "CD24", "FBLN1",
+            "HMGA2", "LSR", "SRGN", "TUBA1A", "DPYSL3", "DST",
+            "GADD45B", "LAMA3", "PMEPA1", "THY1", "ACTA2", "AKT3",
+            "CA2", "CKMT1B", "BDNF", "CAPG", "CD59", "COL16A1",
+            "EDIL3", "GADD45A", "GEM", "ID2", "IGFBP2", "ITGAV",
+            "JUN", "LOXL1", "MCM7", "PLOD2", "RHOB", "SAT1",
+            "SDC1", "SERPINH1", "SLC6A8", "SPP1", "TFPI2",
+            "TIMP1", "TNFRSF12A", "TPM2", "VEGFA"
+        ]
+    }
+}
+      

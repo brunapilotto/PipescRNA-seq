@@ -1,13 +1,5 @@
 #!/usr/bin/env Rscript
 
-BiocManager::install(version = "3.18")
-bioc_packages <- c("IRanges", "SingleCellExperiment", "PCAtools")
-for (pkg in bioc_packages) {
-  if (!requireNamespace(pkg, quietly = TRUE)) {
-      BiocManager::install(pkg, force = TRUE, quietly = TRUE)
-  }
-}
-
 library(Seurat)
 library(ggplot2)
 library(dplyr)
@@ -49,11 +41,10 @@ pca_stdev <- Stdev(seurat_object, reduction = "pca")
 pca_variance <- pca_stdev^2
 pca_variance_explained_percent <- (pca_variance / sum(pca_variance)) * 100
 chosen.elbow <- findElbowPoint(pca_variance_explained_percent)
-if (chosen.elbow < 10) {
-  chosen.elbow <- 10
-}
-output_string <- sprintf("Elbow point in the percentage of variance explained by successive PCs: %d", chosen.elbow)
-writeLines(output_string, "dimensionality.txt")
+output_string_1 <- sprintf("Elbow point in the percentage of variance explained by successive PCs: %d", chosen.elbow)
+writeLines(output_string_1, "elbow_point.txt")
+output_string_2 <- sprintf("Percentage of variance explained by the first %d PCs: %f", chosen.elbow, sum(pca_variance_explained_percent[1:chosen.elbow]))
+writeLines(output_string_2, "percentage_of_variance.txt")
 pdf(file = "elbow_plot.pdf", width = 8, height = 6)
 par(mar = c(5, 4, 4, 2) + 0.1)
 plot(pca_variance_explained_percent, xlab = "PC", ylab = "Variance explained (%)")
@@ -64,6 +55,7 @@ dev.off()
 seurat_object <- FindNeighbors(seurat_object, dims = 1:chosen.elbow)
 seurat_object <- FindClusters(seurat_object, resolution = 0.55)
 seurat_object <- RunUMAP(seurat_object, dims = 1:chosen.elbow)
+seurat_object <- RunTSNE(seurat_object, reduction = "pca", dims = 1:chosen.elbow)
 
 
 ######## Remove Doublets ########
@@ -96,7 +88,9 @@ writeLines(output_string, "qc_metrics_final.txt")
 umap_plot <- DimPlot(seurat_object, reduction = "umap", label.size = 4, repel = TRUE, label = TRUE,
                      group.by = "seurat_clusters") + ggtitle("Seurat Clustering")
 ggsave(filename = "umap_plot.png", plot = umap_plot, dpi = 300, height = 5, width = 7, units = "in")
-
+tsne_plot <- DimPlot(seurat_object, reduction = "tsne", label.size = 4, repel = TRUE, label = TRUE,
+                     group.by = "seurat_clusters") + ggtitle("Seurat Clustering")
+ggsave(filename = "tsne_plot.png", plot = tsne_plot, dpi = 300, height = 5, width = 7, units = "in")
 
 # find markers for every cluster compared to all remaining cells, report only the positive ones
 cluster_markers <- FindAllMarkers(seurat_object, only.pos = TRUE, min.pct = 0.25, logfc.threshold = 0.25)
