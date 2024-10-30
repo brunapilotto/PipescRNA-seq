@@ -77,7 +77,7 @@ for (category in names(genes_list)) {
   if (percentage_present > 20) {
     filtered_genes_list[[category]] <- genes_list[[category]]
   } else {
-    print(paste(category, "hallmark not present in the dataset"))
+    print(paste(category, "Cell type not present in the dataset"))
   }
 }
 rm(genes_list)
@@ -132,7 +132,7 @@ for (category in names(genes_list)) {
   if (percentage_present > 20) {
     filtered_genes_list[[category]] <- genes_list[[category]]
   } else {
-    print(paste(category, "hallmark not present in the dataset"))
+    print(paste(category, "Cell type not present in the dataset"))
   }
 }
 rm(genes_list)
