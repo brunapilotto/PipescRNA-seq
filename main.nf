@@ -59,6 +59,7 @@ workflow {
     if ( params.skip_annotation == false ) {
         SINGLE_ANNOTATION_PLOTS ( SINGLE_SEURAT.out.single_seurat_object )
     }
+
     if ( params.skip_retinoblastoma == false ) {
         SINGLE_UPDATE_SIGNATURE ( SINGLE_ANNOTATION_PLOTS.out.immuno_signature )
         SINGLE_RETINOBLASTOMA_PLOTS ( 
@@ -66,7 +67,6 @@ workflow {
             .combine( SINGLE_UPDATE_SIGNATURE.out.updated_signature, by: 0 ) 
         )
     }
-    
 
     if ( params.skip_integration == false ) {
         single_objects = SINGLE_SEURAT.out.single_seurat_object
